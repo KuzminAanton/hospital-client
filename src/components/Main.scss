@@ -1,0 +1,20 @@
+button.header-btn {
+  box-sizing: border-box;
+  height: 40px;
+  padding: 10px 40px;
+  margin-right: 40px;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 28px;
+  color: #000;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.header__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
