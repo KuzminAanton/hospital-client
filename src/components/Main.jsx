@@ -8,10 +8,9 @@ const Main = () => {
 
   return (
     <div>
-      <Header
-        headerText={headerText}
-        children={<Button className="header-btn">Выйти</Button>}
-      />
+      <Header headerText={headerText}>
+        <Button className="header-btn">Выйти</Button>
+      </Header>
     </div>
   );
 };

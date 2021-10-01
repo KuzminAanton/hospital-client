@@ -33,6 +33,7 @@
 }
 
 .auth-form-inputs-elem {
+  position: relative;
   display: flex;
   flex-direction: column;
   margin-bottom: 8px;
@@ -41,7 +42,7 @@
     margin-bottom: 15px;
   }
 
-  & > span {
+  & > p {
     margin-bottom: 8px;
     font-size: 18px;
     font-style: normal;
@@ -98,4 +99,11 @@
 
 .auth-inputs-field-error__disable {
   opacity: 0;
+}
+
+span.auth-form-inputs-elem-error-text {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+  color: #ff2f2f;
 }

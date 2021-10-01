@@ -8,10 +8,10 @@ const App = () => {
   return (
     <div className="App">
       <Switch>
-        <Route path="/auth/">
+        <Route path="/auth">
           <Auth />
         </Route>
-        <Route path="/main/">
+        <Route path="/main">
           <Main />
         </Route>
       </Switch>

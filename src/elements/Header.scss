@@ -6,6 +6,7 @@
 .header-title {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
 }
 
@@ -27,5 +28,16 @@
     font-weight: 300;
     line-height: 42px;
     color: #000;
+  }
+}
+
+@media (max-width: 500px) {
+  .header-title{
+
+  }
+  .header-title__text {
+    & > p {
+      font-size: 18px;
+    }
   }
 }

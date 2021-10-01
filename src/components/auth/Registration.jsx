@@ -2,21 +2,29 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  Link,
   TextField,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Header from '../../elements/Header';
 import Logo from '../../elements/Logo';
 import './Auth.scss';
 
 const Registration = () => {
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [retryPassword, setRetryPassword] = useState('');
+  const [inputState, setInputState] = useState({
+    login: '',
+    password: '',
+    retryPassword: '',
+  });
   const [errorAlertLog, setErrorAlertLog] = useState(false);
   const [errorAlertPass, setErrorAlertPass] = useState(false);
   const [errorAlertPassReplay, setErrorAlertPassReplay] = useState(false);
   const [errorText, setErrorText] = useState('');
+
+  const {
+    login,
+    password,
+    retryPassword,
+  } = inputState;
 
   const formSubmit = () => {
     if (!(login || password || retryPassword)) {
@@ -39,9 +47,11 @@ const Registration = () => {
         const regExp = /^(?=.*[A-Za-z])(?=.*\d)[a-zA-Z0-9!@#$%^&*()~¥=_+}{":;'?/>.<,`\-\|\[\]]{6,20}$/;
         if (!regExp.test(password)) {
           setErrorAlertPass(true);
+          setErrorAlertPassReplay(true);
           setErrorText('Некорректный пароль');
         } else {
           setErrorAlertPass(false);
+          setErrorAlertPassReplay(false);
           setErrorText('');
           if (!(password === retryPassword)) {
             setErrorAlertPassReplay(true);
@@ -50,7 +60,6 @@ const Registration = () => {
           } else {
             setErrorAlertPassReplay(false);
             setErrorText('');
-            console.log('AXIOSSSSS!!!!');
           }
         }
       }
@@ -86,7 +95,10 @@ const Registration = () => {
                 type="text"
                 placeholder="Login"
                 value={login}
-                onChange={(e) => setLogin(e.target.value)}
+                onChange={(e) => setInputState({
+                  ...inputState,
+                  login: e.target.value,
+                })}
               />
             </div>
             <div className="auth-form-inputs-elem">
@@ -97,7 +109,10 @@ const Registration = () => {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setInputState({
+                  ...inputState,
+                  password: e.target.value,
+                })}
               />
             </div>
             <div className="auth-form-inputs-elem">
@@ -108,13 +123,16 @@ const Registration = () => {
                 type="password"
                 placeholder="Password"
                 value={retryPassword}
-                onChange={(e) => setRetryPassword(e.target.value)}
+                onChange={(e) => setInputState({
+                  ...inputState,
+                  retryPassword: e.target.value,
+                })}
               />
             </div>
           </div>
           <div className="auth-form__btns">
-            <Button onClick={formSubmit} variant="outlined">Зарегистрироваться</Button>
-            <Link underline="hover" href="#">Авторизоваться</Link>
+            <Button onClick={() => formSubmit()} variant="outlined">Зарегистрироваться</Button>
+            <Link to="/auth/login">Авторизоваться</Link>
           </div>
         </Box>
       </div>
