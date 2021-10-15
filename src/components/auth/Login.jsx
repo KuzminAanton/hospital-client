@@ -7,6 +7,8 @@ import {
 import { Link } from 'react-router-dom';
 import Logo from '../../elements/Logo';
 
+import '../auth/Auth.scss';
+
 const Login = (props) => {
   const {
     inputState,
