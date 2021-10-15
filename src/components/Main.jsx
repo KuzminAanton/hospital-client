@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
+
 import './Main.scss';
 
 const Main = (props) => {
@@ -21,15 +22,16 @@ const Main = (props) => {
   }, []);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getAppointments', {},
+    await axios.get('http://localhost:5000/getAppointments',
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setAppointmentList(res.data.data);
+      const { data, error } = res.data;
+      if (!error) {
+        setAppointmentList(data);
       } else {
         logout();
       }
@@ -37,20 +39,21 @@ const Main = (props) => {
   }, [setAppointmentList]);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getDoctors', {},
+    await axios.get('http://localhost:5000/getDoctors',
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setDoctorsList(res.data.data);
+      const { error, data } = res.data;
+      if (!error) {
+        setDoctorsList(data);
       } else {
         logout();
       }
     });
-  }, [setDoctorsList]);
+  }, [logout, setDoctorsList, token]);
 
   const [checkMainFilter, setCheckMainFilter] = useState('');
   const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
@@ -86,6 +89,74 @@ const Main = (props) => {
       });
     });
   };
+
+  const filterListItem = [
+    [
+      {
+        value: 'empty',
+        text: 'Не выбрано',
+      },
+      {
+        value: 'name',
+        text: 'По имени',
+      },
+      {
+        value: 'doctor',
+        text: 'По врачу',
+      },
+      {
+        value: 'date',
+        text: 'По дате',
+      },
+    ],
+    [
+      {
+        value: 'incr',
+        text: 'По возрастанию',
+      },
+      {
+        value: 'decr',
+        text: 'По убыванию',
+      },
+    ],
+  ];
+
+  { /* <div className="main-content-table__name main-content-table__column">
+                  <span>Имя</span>
+                </div>
+                <div className="main-content-table__doctor main-content-table__column">
+                  <span>Врач</span>
+                </div>
+                <div className="main-content-table__date main-content-table__column">
+                  <span>Дата</span>
+                </div>
+                <div className="main-content-table__complaints main-content-table__column">
+                  <span>Жалобы</span>
+                </div>
+                <div className="main-content-table__plug main-content-table__column" />*/ }
+
+  const tableHeaderRender = [
+    {
+      className: 'main-content-table__name',
+      text: 'Имя',
+    },
+    {
+      className: 'main-content-table__doctor',
+      text: 'Врач',
+    },
+    {
+      className: 'main-content-table__date',
+      text: 'Дата',
+    },
+    {
+      className: 'main-content-table__complaints',
+      text: 'Жалобы',
+    },
+    {
+      className: 'main-content-table__plug',
+      text: '',
+    },
+  ];
 
   return (
     <div>
@@ -169,10 +240,15 @@ const Main = (props) => {
                     value={checkMainFilter === 'empty' ? '' : checkMainFilter}
                     onChange={(e) => setCheckMainFilter(e.target.value)}
                   >
-                    <MenuItem value="empty">Не выбрано</MenuItem>
-                    <MenuItem value="name">По имени</MenuItem>
-                    <MenuItem value="doctor">По врачу</MenuItem>
-                    <MenuItem value="date">По дате</MenuItem>
+                    {
+                      filterListItem[0].map((value) => (
+                        <MenuItem
+                          value={value.value}
+                        >
+                          {value.text}
+                        </MenuItem>
+                      ))
+                    }
                   </Select>
                 </div>
                 {
@@ -194,8 +270,15 @@ const Main = (props) => {
                           <Select
                             className="main-content-sort-input-fields"
                           >
-                            <MenuItem value="incr">По возрастанию</MenuItem>
-                            <MenuItem value="decr">По убыванию</MenuItem>
+                            {
+                              filterListItem[1].map((value) => (
+                                <MenuItem
+                                  value={value.value}
+                                >
+                                  {value.text}
+                                </MenuItem>
+                              ))
+                            }
                           </Select>
                         </div>
                       )
@@ -231,19 +314,13 @@ const Main = (props) => {
             </div>
             <div className="main-content-table">
               <div className="main-content-table-header">
-                <div className="main-content-table__name main-content-table__column">
-                  <span>Имя</span>
-                </div>
-                <div className="main-content-table__doctor main-content-table__column">
-                  <span>Врач</span>
-                </div>
-                <div className="main-content-table__date main-content-table__column">
-                  <span>Дата</span>
-                </div>
-                <div className="main-content-table__complaints main-content-table__column">
-                  <span>Жалобы</span>
-                </div>
-                <div className="main-content-table__plug main-content-table__column" />
+                {
+                  tableHeaderRender.map((value) => (
+                    <div className={`main-content-table__column ${value.className}`}>
+                      <span>{value.text}</span>
+                    </div>
+                  ))
+                }
               </div>
               <div className="main-content-table-body">
                 {

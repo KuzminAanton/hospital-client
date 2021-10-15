@@ -7,6 +7,8 @@ import Login from '../components/auth/Login';
 import Registration from '../components/auth/Registration';
 import { AuthContext } from '../AuthContext';
 
+import '../components/auth/Auth.scss';
+
 const Auth = (props) => {
   const { headerParam, setHeaderParam } = props;
   const [inputState, setInputState] = useState({
@@ -61,8 +63,9 @@ const Auth = (props) => {
                   login: loginValue,
                   password: passwordValue,
                 }).then((res) => {
+                  const { token } = res.data;
                   if (res.data) {
-                    login(res.data.token, res.data.userId);
+                    login(token);
                   }
                 });
               }
@@ -72,8 +75,9 @@ const Auth = (props) => {
                 login: loginValue,
                 password: passwordValue,
               }).then((res) => {
-                if (res.data) {
-                  login(res.data.token, res.data.userId);
+                const { token } = res.data;
+                if (token) {
+                  login(token);
                 }
               });
               break;
