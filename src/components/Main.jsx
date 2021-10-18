@@ -121,20 +121,6 @@ const Main = (props) => {
     ],
   ];
 
-  { /* <div className="main-content-table__name main-content-table__column">
-                  <span>Имя</span>
-                </div>
-                <div className="main-content-table__doctor main-content-table__column">
-                  <span>Врач</span>
-                </div>
-                <div className="main-content-table__date main-content-table__column">
-                  <span>Дата</span>
-                </div>
-                <div className="main-content-table__complaints main-content-table__column">
-                  <span>Жалобы</span>
-                </div>
-                <div className="main-content-table__plug main-content-table__column" />*/ }
-
   const tableHeaderRender = [
     {
       className: 'main-content-table__name',
