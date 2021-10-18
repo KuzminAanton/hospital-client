@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Button } from '@mui/material';
 import { AuthContext } from '../AuthContext';
+
 import './Header.scss';
 
 const Header = (props) => {
@@ -18,10 +19,14 @@ const Header = (props) => {
             <p>{headerParam.text}</p>
           </div>
         </div>
-        {headerParam.checkBtn
-          && <div className="header-btn">
+        {
+          headerParam.checkBtn
+          && (
+            <div className="header-btn">
               <Button onClick={() => logout()}>Выход</Button>
-            </div>}
+            </div>
+          )
+        }
       </div>
     </div>
   );

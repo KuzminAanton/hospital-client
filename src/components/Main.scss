@@ -2,6 +2,10 @@
   box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+.main-control.MuiFormControl-root {
+  display: flex;
+}
+
 .main-top__wrapper {
   display: flex;
   flex-direction: row;
@@ -19,6 +23,35 @@
   flex-wrap: wrap;
   justify-content: space-between;
   padding-top: 24px;
+
+  &.active {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding-bottom: 30px;
+
+    & > .main-top-inputs__label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 24px;
+
+      p {
+        margin-right: 10px;
+      }
+    }
+
+    .main-top-inputs-btn-deactivate {
+      width: 23px;
+      height: 30px;
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+    }
+  }
 }
 
 .main-top-inputs__label {
@@ -46,6 +79,16 @@
     min-height: 45px;
     padding: 0 15px;
   }
+
+  &.active {
+    width: 238px;
+  }
+
+  &.doctor-list {
+    min-width: 188px;
+    max-height: 47px;
+    border: none;
+  }
 }
 
 .main-top-btns {
@@ -68,15 +111,22 @@
   margin: 0 auto;
 }
 
-.main-content-sort {
+.main-content-sort__wrapper {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+  margin-bottom: 28px;
 }
 
 .main-content-sort-input {
   display: flex;
   align-items: center;
+
+  .main-content-sort-input-fields {
+    max-height: 47px;
+    margin: 0 24px 0 18px;
+    border: none;
+  }
 
   input {
     min-height: 45px;
@@ -94,6 +144,7 @@
 .main-content-sort-date-sort {
   display: flex;
   align-items: center;
+  margin-right: 28px;
 
   span {
     font-size: 18px;
@@ -102,8 +153,14 @@
   }
 }
 
+.main-content-sort-input {
+  .MuiOutlinedInput-root {
+    min-width: 200px;
+  }
+}
+
 .main-content-sort-input-fields {
-  max-width: 200px;
+  margin-left: 18px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
@@ -111,5 +168,175 @@
   input {
     min-height: 45px;
     padding: 0 15px;
+  }
+}
+
+.main-content-table {
+  display: flex;
+  flex-direction: column;
+  max-width: 941px;
+}
+
+.main-content-table-header {
+  display: flex;
+  flex-direction: row;
+  min-height: 47px;
+  background: #c4c4c4;
+
+  span {
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+  }
+}
+
+.main-content-table__column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.in-row {
+    align-items: flex-start;
+    padding-bottom: 6px;
+  }
+}
+
+.main-content-table__name {
+  width: 25.6%;
+
+  &.in-row {
+    border-right: 1px solid black;
+  }
+}
+
+.main-content-table__doctor {
+  width: 25.3%;
+
+  &.in-row {
+    border-right: 1px solid black;
+  }
+}
+
+.main-content-table__date {
+  width: 17%;
+
+  &.in-row {
+    border-right: 1px solid black;
+  }
+}
+
+.main-content-table__complaints {
+  width: 21.4%;
+
+  &.in-row {
+    border-right: 1px solid black;
+
+    span {
+      padding: 0 25px;
+    }
+  }
+}
+
+.main-content-table__plug {
+  width: 11%;
+
+  &.in-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      width: 14px;
+      min-width: 14px;
+      height: 14px;
+      padding: 0;
+      margin: 10px;
+
+      &:first-child {
+        //margin-right: 16px;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+    }
+  }
+}
+
+.main-content-table-body {
+  border: 1px solid black;
+}
+
+.main-content-table-row {
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+
+  &:first-child {
+    .main-content-table__name {
+      padding: 20px 0 6px;
+    }
+
+    .main-content-table__doctor {
+      padding: 20px 0 6px;
+    }
+
+    .main-content-table__date {
+      padding: 20px 0 6px;
+    }
+
+    .main-content-table__complaints {
+      padding: 20px 0 6px;
+    }
+
+    .main-content-table__plug {
+      padding: 20px 0 6px;
+    }
+  }
+
+  &:last-child {
+    .main-content-table__name {
+      padding: 0 0 30px;
+    }
+
+    .main-content-table__doctor {
+      padding: 0 0 30px;
+    }
+
+    .main-content-table__date {
+      padding: 0 0 30px;
+    }
+
+    .main-content-table__complaints {
+      padding: 0 0 30px;
+    }
+
+    .main-content-table__plug {
+      padding: 0 0 30px;
+    }
+  }
+}
+
+.main-content-table-row {
+  span {
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+  }
+}
+
+.main-top-inputs-btn {
+  button {
+    min-height: 45px;
+    padding: 0 25px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    color: #000;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
   }
 }

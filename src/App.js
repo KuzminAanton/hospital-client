@@ -12,7 +12,7 @@ const App = () => {
     checkBtn: false,
   });
   const {
-    login, logout, token, userId,
+    login, logout, token, userId, isReady,
   } = useAuth();
   const isLogin = !!token;
 
@@ -22,6 +22,7 @@ const App = () => {
       logout,
       token,
       userId,
+      isReady,
       isLogin,
     }}
     >

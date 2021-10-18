@@ -41,6 +41,8 @@
 }
 
 .header-btn {
+  margin-right: 40px;
+
   button {
     min-height: 45px;
     padding: 0 25px;
@@ -55,6 +57,9 @@
 }
 
 @media (max-width: 500px) {
+  .header-title{
+
+  }
   .header-title__text {
     & > p {
       font-size: 18px;
