@@ -5,15 +5,15 @@ import {
   TextField,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import Header from '../../elements/Header';
 import Logo from '../../elements/Logo';
+import './Auth.scss';
 
 const Login = (props) => {
   const {
     inputState,
     setInputState,
-    errorAlertLog,
-    errorAlertPass,
-    errorText,
+    errorState,
     formSubmit,
     headerParam,
     setHeaderParam,
@@ -22,6 +22,11 @@ const Login = (props) => {
     loginValue,
     passwordValue,
   } = inputState;
+  const {
+    errorAlertLog,
+    errorAlertPass,
+    errorText
+  } = errorState;
 
   useEffect(() => {
     setHeaderParam({
@@ -33,6 +38,7 @@ const Login = (props) => {
 
   return (
     <div>
+      <Header headerText="Зарегистрироваться в системе" />
       <div className="auth__main">
         <Logo />
         <Box component="form" className="auth-form">
