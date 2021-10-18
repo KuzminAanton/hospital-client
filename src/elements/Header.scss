@@ -1,3 +1,12 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 989px;
+  margin: 0 auto;
+}
+
 .header__container {
   padding: 22px 0 25px;
   box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
@@ -31,10 +40,21 @@
   }
 }
 
-@media (max-width: 500px) {
-  .header-title{
-
+.header-btn {
+  button {
+    min-height: 45px;
+    padding: 0 25px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    color: #000;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
   }
+}
+
+@media (max-width: 500px) {
   .header-title__text {
     & > p {
       font-size: 18px;

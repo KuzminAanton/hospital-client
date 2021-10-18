@@ -1,20 +1,115 @@
-button.header-btn {
-  box-sizing: border-box;
-  height: 40px;
-  padding: 10px 40px;
-  margin-right: 40px;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 300;
-  line-height: 28px;
-  color: #000;
+.main-global {
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.main-top__wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+  max-width: 989px;
+  padding-bottom: 25px;
+  margin: 0 auto;
+}
+
+.main-top-inputs {
+  display: inherit;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 24px;
+}
+
+.main-top-inputs__label {
+  margin-right: 12px;
+
+  &:last-child {
+    margin-right: 24px;
+  }
+
+  p {
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+  }
+}
+
+.main-top-inputs-fields {
+  max-width: 188px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+
+  input {
+    min-height: 45px;
+    padding: 0 15px;
+  }
 }
 
-.header__container {
+.main-top-btns {
+  button {
+    min-height: 45px;
+    padding: 0 25px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    color: #000;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+}
+
+.main-content {
+  max-width: 989px;
+  padding-top: 37px;
+  margin: 0 auto;
+}
+
+.main-content-sort {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.main-content-sort-input {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+
+  input {
+    min-height: 45px;
+    padding: 0 15px;
+    border-radius: 4px;
+  }
+
+  span {
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+  }
+}
+
+.main-content-sort-date-sort {
+  display: flex;
+  align-items: center;
+
+  span {
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+  }
+}
+
+.main-content-sort-input-fields {
+  max-width: 200px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+
+  input {
+    min-height: 45px;
+    padding: 0 15px;
+  }
 }
