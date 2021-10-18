@@ -1,23 +1,33 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Button } from '@mui/material';
+import { AuthContext } from '../AuthContext';
 
 import './Header.scss';
 
 const Header = (props) => {
-  const { headerText, children } = props;
+  const { headerParam } = props;
+  const { logout } = useContext(AuthContext);
 
   return (
     <div className="header__container">
-      <div className="header-title">
-        <div className="header-title__logo">
-          <img src="../images/icon-logo.svg" alt="logo" />
+      <div className="header">
+        <div className="header-title">
+          <div className="header-title__logo">
+            <img src="../images/icon-logo.svg" alt="logo" />
+          </div>
+          <div className="header-title__text">
+            <p>{headerParam.text}</p>
+          </div>
         </div>
-        <div className="header-title__text">
-          <p>
-            {headerText}
-          </p>
-        </div>
+        {
+          headerParam.checkBtn
+          && (
+            <div className="header-btn">
+              <Button onClick={() => logout()}>Выход</Button>
+            </div>
+          )
+        }
       </div>
-      {children}
     </div>
   );
 };
