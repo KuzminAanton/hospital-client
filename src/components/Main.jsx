@@ -7,7 +7,6 @@ import {
   TextField,
 } from '@mui/material';
 import axios from 'axios';
-import _ from 'lodash';
 import { AuthContext } from '../AuthContext';
 import ModalWindow from '../elements/ModalWindow';
 import './Main.scss';
@@ -18,10 +17,7 @@ const Main = (props) => {
   const { logout } = useContext(AuthContext);
   const [doctorsList, setDoctorsList] = useState([]);
   const [appointmentList, setAppointmentList] = useState([]);
-  const [checkMainFilter, setCheckMainFilter] = useState({
-    typeFilter: '',
-    direction: '',
-  });
+  const [checkMainFilter, setCheckMainFilter] = useState('');
   const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
   const [valueInputAdd, setValueInputAdd] = useState({
     name: '',
@@ -29,6 +25,12 @@ const Main = (props) => {
     date: '',
     complaints: '',
   });
+  const {
+    name,
+    doctor,
+    date,
+    complaints,
+  } = valueInputAdd;
 
   useEffect(() => {
     setHeaderParam({
@@ -39,15 +41,16 @@ const Main = (props) => {
   }, []);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getAppointments', {},
+    await axios.get('http://localhost:5000/getAppointments',
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setAppointmentList(res.data.data);
+      const { data, error } = res.data;
+      if (!error) {
+        setAppointmentList(data);
       } else {
         logout();
       }
@@ -55,15 +58,16 @@ const Main = (props) => {
   }, [setAppointmentList]);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getDoctors', {},
+    await axios.get('http://localhost:5000/getDoctors',
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setDoctorsList(res.data.data);
+      const { data, error } = res.data;
+      if (!error) {
+        setDoctorsList(data);
       } else {
         logout();
       }
@@ -71,9 +75,6 @@ const Main = (props) => {
   }, [setDoctorsList]);
 
   const addNewAppointment = async () => {
-    const {
-      name, doctor, date, complaints,
-    } = valueInputAdd;
     await axios.post('http://localhost:5000/addAppointments', {
       patientName: name,
       doctorName: doctor,
@@ -96,40 +97,59 @@ const Main = (props) => {
     });
   };
 
-  const directionFilterFunc = (e) => {
-    const { value } = e.target;
-    setCheckMainFilter({
-      ...checkMainFilter,
-      direction: e.target.value,
-    });
-    setAppointmentList(_.orderBy(appointmentList,
-      [`${checkMainFilter.typeFilter}`],
-      [`${value}`]));
-  };
+  const filterListItem = [
+    [
+      {
+        value: 'empty',
+        text: 'Не выбрано',
+      },
+      {
+        value: 'name',
+        text: 'По имени',
+      },
+      {
+        value: 'doctor',
+        text: 'По врачу',
+      },
+      {
+        value: 'date',
+        text: 'По дате',
+      },
+    ],
+    [
+      {
+        value: 'incr',
+        text: 'По возрастанию',
+      },
+      {
+        value: 'decr',
+        text: 'По убыванию',
+      },
+    ],
+  ];
 
-  const typeFilterFunc = (e) => {
-    const { value } = e.target;
-    setCheckMainFilter({
-      ...checkMainFilter,
-      typeFilter: value,
-    });
-    setAppointmentList(_.orderBy(appointmentList, [`${value}`]));
-  };
-
-  const filterChange = (e, value) => {
-    switch (value) {
-      case 'typeFilter':
-        typeFilterFunc(e);
-        break;
-      case 'direction':
-        directionFilterFunc(e);
-        break;
-      default:
-        setCheckMainFilter(() => ({
-          ...checkMainFilter,
-        }));
-    }
-  };
+  const tableHeaderRender = [
+    {
+      className: 'main-content-table__name',
+      text: 'Имя',
+    },
+    {
+      className: 'main-content-table__doctor',
+      text: 'Врач',
+    },
+    {
+      className: 'main-content-table__date',
+      text: 'Дата',
+    },
+    {
+      className: 'main-content-table__complaints',
+      text: 'Жалобы',
+    },
+    {
+      className: 'main-content-table__plug',
+      text: '',
+    },
+  ];
 
   return (
     <div>
@@ -142,7 +162,7 @@ const Main = (props) => {
                 <TextField
                   name="name"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.name}
+                  value={name}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     name: e.target.value,
@@ -154,7 +174,7 @@ const Main = (props) => {
                 <Select
                   name="doctor"
                   className="main-top-inputs-fields doctor-list"
-                  value={valueInputAdd.doctor}
+                  value={doctor}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     doctor: e.target.value,
@@ -171,7 +191,7 @@ const Main = (props) => {
                   name="date"
                   type="date"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.date}
+                  value={date}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     date: e.target.value,
@@ -183,7 +203,7 @@ const Main = (props) => {
                 <TextField
                   name="complaints"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.complaints}
+                  value={complaints}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     complaints: e.target.value,
@@ -209,18 +229,23 @@ const Main = (props) => {
                   <span>Сортировать по:</span>
                   <Select
                     className="main-content-sort-input-fields"
-                    value={checkMainFilter.typeFilter === 'empty' ? '' : checkMainFilter.typeFilter}
-                    onChange={(e) => filterChange(e, 'typeFilter')}
+                    value={checkMainFilter === 'empty' ? '' : checkMainFilter}
+                    onChange={(e) => setCheckMainFilter(e.target.value)}
                   >
-                    <MenuItem value="empty">Не выбрано</MenuItem>
-                    <MenuItem value="patientName">По имени</MenuItem>
-                    <MenuItem value="doctorName">По врачу</MenuItem>
-                    <MenuItem value="date">По дате</MenuItem>
+                    {
+                      filterListItem[0].map((value) => (
+                        <MenuItem
+                          value={value.value}
+                        >
+                          {value.text}
+                        </MenuItem>
+                      ))
+                    }
                   </Select>
                 </div>
                 {
-                  checkMainFilter.typeFilter === 'date' && !checkDateAreaFilter
-                    ? (
+                  checkMainFilter === 'date' && !checkDateAreaFilter
+                    && (
                       <div className="main-content-sort-date-sort">
                         <span>Добавить фильтр по дате:</span>
                         <Button onClick={() => setCheckDateAreaFilter(!checkDateAreaFilter)}>
@@ -230,26 +255,32 @@ const Main = (props) => {
                         </Button>
                       </div>
                     )
-                    : checkMainFilter.typeFilter === 'doctorName' || checkMainFilter.typeFilter === 'patientName'
-                      ? (
-                        <div className="main-content-sort-input">
-                          <span>Направление:</span>
-                          <Select
-                            className="main-content-sort-input-fields"
-                            value={checkMainFilter.direction}
-                            onChange={(e) => filterChange(e, 'direction')}
-                          >
-                            <MenuItem value="asc">По возрастанию</MenuItem>
-                            <MenuItem value="desc">По убыванию</MenuItem>
-                          </Select>
-                        </div>
-                      )
-                      : <></>
+                }
+                {
+                  (checkMainFilter === 'doctor' || checkMainFilter === 'name')
+                  && (
+                    <div className="main-content-sort-input">
+                      <span>Направление:</span>
+                      <Select
+                        className="main-content-sort-input-fields"
+                      >
+                        {
+                          filterListItem[1].map((value) => (
+                            <MenuItem
+                              value={value.value}
+                            >
+                              {value.text}
+                            </MenuItem>
+                          ))
+                        }
+                      </Select>
+                    </div>
+                  )
                 }
               </div>
               {
                 checkMainFilter === 'date' && checkDateAreaFilter
-                  ? (
+                  && (
                     <div className="main-top-inputs active">
                       <div className="main-top-inputs__label">
                         <p>C:</p>
@@ -271,24 +302,17 @@ const Main = (props) => {
                       </div>
                     </div>
                   )
-                  : <></>
               }
             </div>
             <div className="main-content-table">
               <div className="main-content-table-header">
-                <div className="main-content-table__name main-content-table__column">
-                  <span>Имя</span>
-                </div>
-                <div className="main-content-table__doctor main-content-table__column">
-                  <span>Врач</span>
-                </div>
-                <div className="main-content-table__date main-content-table__column">
-                  <span>Дата</span>
-                </div>
-                <div className="main-content-table__complaints main-content-table__column">
-                  <span>Жалобы</span>
-                </div>
-                <div className="main-content-table__plug main-content-table__column" />
+                {
+                  tableHeaderRender.map((value) => (
+                    <div className={`main-content-table__column ${value.className}`}>
+                      <span>{value.text}</span>
+                    </div>
+                  ))
+                }
               </div>
               <div className="main-content-table-body">
                 {
@@ -314,6 +338,7 @@ const Main = (props) => {
                           valueInputAdd={valueInputAdd}
                           index={index}
                           typeModal="edit"
+                          token={token}
                           logout={logout}
                         />
                         <ModalWindow

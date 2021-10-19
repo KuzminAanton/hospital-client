@@ -6,14 +6,13 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Logo from '../../elements/Logo';
+import './Auth.scss';
 
 const Login = (props) => {
   const {
     inputState,
     setInputState,
-    errorAlertLog,
-    errorAlertPass,
-    errorText,
+    errorState,
     formSubmit,
     headerParam,
     setHeaderParam,
@@ -22,6 +21,11 @@ const Login = (props) => {
     loginValue,
     passwordValue,
   } = inputState;
+  const {
+    errorAlertLog,
+    errorAlertPass,
+    errorText,
+  } = errorState;
 
   useEffect(() => {
     setHeaderParam({
@@ -37,7 +41,7 @@ const Login = (props) => {
         <Logo />
         <Box component="form" className="auth-form">
           <div className="auth-form__title">
-            <p>Регистрация</p>
+            <p>Авторизация</p>
           </div>
           <div
             className={
