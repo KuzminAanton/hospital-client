@@ -8,11 +8,12 @@ const DeleteAppointment = (props) => {
     handleOpenModal,
     handleCloseModal,
     openModal,
+    deleteAppointment,
   } = props;
 
   return (
-    <div>
-      <Button onClick={() => handleOpenModal()}>
+    <>
+      <Button onClick={handleOpenModal}>
         <img src="../images/icon-delete.svg" alt="img" />
       </Button>
       <Modal
@@ -27,10 +28,30 @@ const DeleteAppointment = (props) => {
         }}
       >
         <Fade in={openModal}>
-          <Box className="modal-ed" />
+          <Box className="modal-ed">
+            <div className="modal-del">
+              <div className="modal-del-title">
+                <h3>Удалить прием</h3>
+              </div>
+              <div className="modal-del-text">
+                <p>Вы действительно хотите удалить прием?</p>
+              </div>
+              <div className="modal-edit-btns header-btn">
+                <Button onClick={() => handleCloseModal()}>
+                  Cancel
+                </Button>
+                <Button
+                  className="modal-edit-btns__right"
+                  onClick={() => deleteAppointment()}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </Box>
         </Fade>
       </Modal>
-    </div>
+    </>
   );
 };
 

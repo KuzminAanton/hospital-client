@@ -26,7 +26,7 @@ const Login = (props) => {
   const {
     errorAlertLog,
     errorAlertPass,
-    errorText
+    errorText,
   } = errorState;
 
   useEffect(() => {

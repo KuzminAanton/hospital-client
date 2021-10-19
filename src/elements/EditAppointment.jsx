@@ -8,8 +8,8 @@ import {
   MenuItem,
   Modal,
   Select,
-  TextField
-} from "@mui/material";
+  TextField,
+} from '@mui/material';
 
 const EditAppointment = (props) => {
   const {
@@ -19,7 +19,7 @@ const EditAppointment = (props) => {
     handleCloseModal,
     inputValueEdit,
     setInputValueEdit,
-    editAppointment
+    editAppointment,
   } = props;
   const {
     name,
@@ -27,7 +27,6 @@ const EditAppointment = (props) => {
     date,
     complaints,
   } = inputValueEdit;
-
 
   return (
     <div>
