@@ -95,16 +95,11 @@ const Auth = (props) => {
                     login(token);
                   })
                   .catch((err) => {
-                    const { message } = err.response.data;
-                    if (message === 'login already') {
+                    const { status } = err.response;
+                    if (status === 402) {
                       setErrorState(() => ({
                         ...errorState,
                         errorText: 'Логин уже зарегистрирован',
-                      }));
-                    } else {
-                      setErrorState(() => ({
-                        ...errorState,
-                        errorText: '',
                       }));
                     }
                   });
@@ -121,15 +116,15 @@ const Auth = (props) => {
                   login(token);
                 })
                 .catch((err) => {
-                  const { message } = err.response.data;
-                  switch (message) {
-                    case 'login is busy':
+                  const { status } = err.response;
+                  switch (status) {
+                    case 404:
                       setErrorState(() => ({
                         ...errorState,
                         errorText: 'Логин не зарегистрирован',
                       }));
                       break;
-                    case 'Incorrect password':
+                    case 401:
                       setErrorState(() => ({
                         ...errorState,
                         errorText: 'Неверный пароль',

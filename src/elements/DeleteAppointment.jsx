@@ -1,6 +1,10 @@
 import React from 'react';
 import {
-  Backdrop, Box, Button, Fade, Modal,
+  Backdrop,
+  Box,
+  Button,
+  Fade,
+  Modal,
 } from '@mui/material';
 
 const DeleteAppointment = (props) => {
@@ -12,8 +16,8 @@ const DeleteAppointment = (props) => {
   } = props;
 
   return (
-    <>
-      <Button onClick={handleOpenModal}>
+    <div>
+      <Button onClick={() => handleOpenModal()}>
         <img src="../images/icon-delete.svg" alt="img" />
       </Button>
       <Modal
@@ -51,7 +55,7 @@ const DeleteAppointment = (props) => {
           </Box>
         </Fade>
       </Modal>
-    </>
+    </div>
   );
 };
 

@@ -75,9 +75,6 @@ const Main = (props) => {
   }, [setDoctorsList]);
 
   const addNewAppointment = async () => {
-    const {
-      name, doctor, date, complaints,
-    } = valueInputAdd;
     await axios.post('http://localhost:5000/addAppointments', {
       patientName: name,
       doctorName: doctor,

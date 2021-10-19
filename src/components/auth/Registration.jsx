@@ -22,19 +22,6 @@ const Registration = (props) => {
     passwordValue,
     retryPasswordValue,
   } = inputState;
-  useEffect(() => {
-    setHeaderParam({
-      ...headerParam,
-      text: 'Зарегистрироваться в системе',
-      checkBtn: false,
-    });
-  }, []);
-  const {
-    errorAlertLog,
-    errorAlertPass,
-    errorAlertPassReplay,
-    errorText
-  } = errorState;
 
   useEffect(() => {
     setHeaderParam({
@@ -43,6 +30,14 @@ const Registration = (props) => {
       checkBtn: false,
     });
   }, []);
+
+  const {
+    errorAlertLog,
+    errorAlertPass,
+    errorAlertPassReplay,
+    errorText,
+  } = errorState;
+
 
   return (
     <div>

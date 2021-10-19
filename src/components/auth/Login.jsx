@@ -5,7 +5,6 @@ import {
   TextField,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import Header from '../../elements/Header';
 import Logo from '../../elements/Logo';
 
 import './Auth.scss';
@@ -39,12 +38,11 @@ const Login = (props) => {
 
   return (
     <div>
-      <Header headerText="Зарегистрироваться в системе" />
       <div className="auth__main">
         <Logo />
         <Box component="form" className="auth-form">
           <div className="auth-form__title">
-            <p>Регистрация</p>
+            <p>Авторизация</p>
           </div>
           <div
             className={
