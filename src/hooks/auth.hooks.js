@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 
 export const useAuth = () => {
   const [token, setToken] = useState(null);
-  const [isReady, setIsReady] = useState(false);
 
   const login = useCallback((jwtToken) => {
     setToken(jwtToken);
@@ -19,10 +18,9 @@ export const useAuth = () => {
     if (data) {
       login(data);
     }
-    setIsReady(true);
   }, [login]);
 
   return {
-    login, logout, token, isReady,
+    login, logout, token,
   };
 };

@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Backdrop, Box,
-  Button, Fade, FormControl, MenuItem, Modal, Select, TextField, Typography,
+  Button,
+  FormControl,
+  MenuItem,
+  Select,
+  TextField,
 } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
-import './Main.scss';
 import ModalWindow from '../elements/ModalWindow';
+import './Main.scss';
 
 const Main = (props) => {
   const { headerParam, setHeaderParam } = props;
@@ -22,6 +25,12 @@ const Main = (props) => {
     date: '',
     complaints: '',
   });
+  const {
+    name,
+    doctor,
+    date,
+    complaints,
+  } = valueInputAdd;
 
   useEffect(() => {
     setHeaderParam({
@@ -32,15 +41,16 @@ const Main = (props) => {
   }, []);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getAppointments', {},
+    await axios.get('http://localhost:5000/getAppointments',
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setAppointmentList(res.data.data);
+      const { data, error } = res.data;
+      if (!error) {
+        setAppointmentList(data);
       } else {
         logout();
       }
@@ -48,7 +58,7 @@ const Main = (props) => {
   }, [setAppointmentList]);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getDoctors', {},
+    await axios.get('http://localhost:5000/getDoctors',
       {
         headers: {
           'Content-Type': 'application/json',
@@ -64,12 +74,7 @@ const Main = (props) => {
     });
   }, [setDoctorsList]);
 
-
-
   const addNewAppointment = async () => {
-    const {
-      name, doctor, date, complaints,
-    } = valueInputAdd;
     await axios.post('http://localhost:5000/addAppointments', {
       patientName: name,
       doctorName: doctor,
@@ -157,7 +162,7 @@ const Main = (props) => {
                 <TextField
                   name="name"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.name}
+                  value={name}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     name: e.target.value,
@@ -169,7 +174,7 @@ const Main = (props) => {
                 <Select
                   name="doctor"
                   className="main-top-inputs-fields doctor-list"
-                  value={valueInputAdd.doctor}
+                  value={doctor}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     doctor: e.target.value,
@@ -187,7 +192,7 @@ const Main = (props) => {
                   name="date"
                   type="date"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.date}
+                  value={date}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     date: e.target.value,
@@ -199,7 +204,7 @@ const Main = (props) => {
                 <TextField
                   name="complaints"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.complaints}
+                  value={complaints}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     complaints: e.target.value,
@@ -241,7 +246,7 @@ const Main = (props) => {
                 </div>
                 {
                   checkMainFilter === 'date' && !checkDateAreaFilter
-                    ? (
+                    && (
                       <div className="main-content-sort-date-sort">
                         <span>Добавить фильтр по дате:</span>
                         <Button onClick={() => setCheckDateAreaFilter(!checkDateAreaFilter)}>
@@ -251,26 +256,27 @@ const Main = (props) => {
                         </Button>
                       </div>
                     )
-                    : checkMainFilter === 'doctor' || checkMainFilter === 'name'
-                      ? (
-                        <div className="main-content-sort-input">
-                          <span>Направление:</span>
-                          <Select
-                            className="main-content-sort-input-fields"
-                          >
-                            {
-                              filterListItem[1].map((value) => (
-                                <MenuItem
-                                  value={value.value}
-                                >
-                                  {value.text}
-                                </MenuItem>
-                              ))
-                            }
-                          </Select>
-                        </div>
-                      )
-                      : <></>
+                }
+                {
+                  (checkMainFilter === 'doctor' || checkMainFilter === 'name')
+                  && (
+                    <div className="main-content-sort-input">
+                      <span>Направление:</span>
+                      <Select
+                        className="main-content-sort-input-fields"
+                      >
+                        {
+                          filterListItem[1].map((value) => (
+                            <MenuItem
+                              value={value.value}
+                            >
+                              {value.text}
+                            </MenuItem>
+                          ))
+                        }
+                      </Select>
+                    </div>
+                  )
                 }
               </div>
               {

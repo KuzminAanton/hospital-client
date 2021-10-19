@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 import {
   Backdrop,
   Box,
@@ -78,6 +81,26 @@ const ModalWindow = (props) => {
     handleCloseModal();
   };
 
+  const deleteAppointment = async () => {
+    await axios.delete(`http://localhost:5000/deleteAppointments?_id=${_idList}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      }).then((res) => {
+      if (!res.data.error) {
+        const { error, data } = res.data;
+        if (!error) {
+          setAppointmentList(data);
+        } else {
+          logout();
+        }
+      }
+    });
+    handleCloseModal();
+  };
+
   return (
     <>
       {
@@ -98,6 +121,7 @@ const ModalWindow = (props) => {
               handleOpenModal={handleOpenModal}
               handleCloseModal={handleCloseModal}
               openModal={openModal}
+              deleteAppointment={deleteAppointment}
             />
           )
       }
