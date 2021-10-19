@@ -1,18 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-  Button, FormControl, MenuItem, Select, TextField,
+  Backdrop, Box,
+  Button, Fade, FormControl, MenuItem, Modal, Select, TextField, Typography,
 } from '@mui/material';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
-
 import './Main.scss';
+import ModalWindow from '../elements/ModalWindow';
 
 const Main = (props) => {
+  const { headerParam, setHeaderParam } = props;
   const { token } = useContext(AuthContext);
   const { logout } = useContext(AuthContext);
   const [doctorsList, setDoctorsList] = useState([]);
   const [appointmentList, setAppointmentList] = useState([]);
-  const { headerParam, setHeaderParam } = props;
+  const [checkMainFilter, setCheckMainFilter] = useState('');
+  const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
+  const [valueInputAdd, setValueInputAdd] = useState({
+    name: '',
+    doctor: '',
+    date: '',
+    complaints: '',
+  });
+
   useEffect(() => {
     setHeaderParam({
       ...headerParam,
@@ -22,7 +32,23 @@ const Main = (props) => {
   }, []);
 
   useEffect(async () => {
-    await axios.get('http://localhost:5000/getAppointments',
+    await axios.post('http://localhost:5000/getAppointments', {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      }).then((res) => {
+      if (!res.data.error) {
+        setAppointmentList(res.data.data);
+      } else {
+        logout();
+      }
+    });
+  }, [setAppointmentList]);
+
+  useEffect(async () => {
+    await axios.post('http://localhost:5000/getDoctors', {},
       {
         headers: {
           'Content-Type': 'application/json',
@@ -31,38 +57,14 @@ const Main = (props) => {
       }).then((res) => {
       const { data, error } = res.data;
       if (!error) {
-        setAppointmentList(data);
-      } else {
-        logout();
-      }
-    });
-  }, [setAppointmentList]);
-
-  useEffect(async () => {
-    await axios.get('http://localhost:5000/getDoctors',
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: token,
-        },
-      }).then((res) => {
-      const { error, data } = res.data;
-      if (!error) {
         setDoctorsList(data);
       } else {
         logout();
       }
     });
-  }, [logout, setDoctorsList, token]);
+  }, [setDoctorsList]);
 
-  const [checkMainFilter, setCheckMainFilter] = useState('');
-  const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
-  const [valueInputAdd, setValueInputAdd] = useState({
-    name: '',
-    doctor: '',
-    date: '',
-    complaints: '',
-  });
+
 
   const addNewAppointment = async () => {
     const {
@@ -273,7 +275,7 @@ const Main = (props) => {
               </div>
               {
                 checkMainFilter === 'date' && checkDateAreaFilter
-                  ? (
+                  && (
                     <div className="main-top-inputs active">
                       <div className="main-top-inputs__label">
                         <p>C:</p>
@@ -295,7 +297,6 @@ const Main = (props) => {
                       </div>
                     </div>
                   )
-                  : <></>
               }
             </div>
             <div className="main-content-table">
@@ -325,12 +326,22 @@ const Main = (props) => {
                         <span>{value.complaints}</span>
                       </div>
                       <div className="main-content-table__plug table-body in-row main-content-table__column">
-                        <Button>
-                          <img src="../images/icon-delete.svg" alt="img" />
-                        </Button>
-                        <Button>
-                          <img src="../images/icon-edit.svg" alt="img" />
-                        </Button>
+                        <ModalWindow
+                          doctorsList={doctorsList}
+                          appointmentList={appointmentList}
+                          setAppointmentList={setAppointmentList}
+                          valueInputAdd={valueInputAdd}
+                          index={index}
+                          typeModal="edit"
+                          token={token}
+                          logout={logout}
+                        />
+                        <ModalWindow
+                          appointmentList={appointmentList}
+                          setAppointmentList={setAppointmentList}
+                          index={index}
+                          typeModal="deleted"
+                        />
                       </div>
                     </div>
                   ))

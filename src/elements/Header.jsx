@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Button } from '@mui/material';
 import { AuthContext } from '../AuthContext';
-
 import './Header.scss';
 
 const Header = (props) => {
