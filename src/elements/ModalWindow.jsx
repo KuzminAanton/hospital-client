@@ -9,9 +9,9 @@ import {
   TextField,
 } from '@mui/material';
 import axios from 'axios';
-import './ModalWindows.scss';
 import EditAppointment from './EditAppointment';
 import DeleteAppointment from './DeleteAppointment';
+import './ModalWindows.scss';
 
 const ModalWindow = (props) => {
   const {

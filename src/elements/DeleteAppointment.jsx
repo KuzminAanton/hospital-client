@@ -12,7 +12,7 @@ const DeleteAppointment = (props) => {
 
   return (
     <div>
-      <Button onClick={handleOpenModal}>
+      <Button onClick={() => handleOpenModal()}>
         <img src="../images/icon-delete.svg" alt="img" />
       </Button>
       <Modal

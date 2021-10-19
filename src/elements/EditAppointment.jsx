@@ -1,5 +1,15 @@
 import React from 'react';
-import { Backdrop, Box, Button, Fade, FormControl, MenuItem, Modal, Select, TextField } from "@mui/material";
+import {
+  Backdrop,
+  Box,
+  Button,
+  Fade,
+  FormControl,
+  MenuItem,
+  Modal,
+  Select,
+  TextField
+} from "@mui/material";
 
 const EditAppointment = (props) => {
   const {
@@ -10,12 +20,18 @@ const EditAppointment = (props) => {
     inputValueEdit,
     setInputValueEdit,
     editAppointment
-  } =props;
+  } = props;
+  const {
+    name,
+    doctor,
+    date,
+    complaints,
+  } = inputValueEdit;
 
 
   return (
     <div>
-      <Button onClick={handleOpenModal}>
+      <Button onClick={() => handleOpenModal()}>
         <img src="../images/icon-edit.svg" alt="img" />
       </Button>
       <Modal
@@ -40,7 +56,7 @@ const EditAppointment = (props) => {
                   <div className="modal-edit-form__input-elem">
                     <p>Имя:</p>
                     <TextField
-                      value={inputValueEdit.name}
+                      value={name}
                       onChange={(e) => setInputValueEdit({
                         ...inputValueEdit,
                         name: e.target.value,
@@ -51,7 +67,7 @@ const EditAppointment = (props) => {
                     <Select
                       name="doctor"
                       className="main-top-inputs-fields doctor-list"
-                      value={inputValueEdit.doctor}
+                      value={doctor}
                       onChange={(e) => setInputValueEdit({
                         ...inputValueEdit,
                         doctor: e.target.value,
@@ -66,7 +82,7 @@ const EditAppointment = (props) => {
                     <p>Дата:</p>
                     <TextField
                       type="date"
-                      value={inputValueEdit.date}
+                      value={date}
                       onChange={(e) => setInputValueEdit({
                         ...inputValueEdit,
                         date: e.target.value,
@@ -76,7 +92,7 @@ const EditAppointment = (props) => {
                   <div className="modal-edit-form__input-elem">
                     <p>Жалобы:</p>
                     <TextField
-                      value={inputValueEdit.complaints}
+                      value={complaints}
                       onChange={(e) => setInputValueEdit({
                         ...inputValueEdit,
                         complaints: e.target.value,
