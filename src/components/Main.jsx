@@ -55,8 +55,9 @@ const Main = (props) => {
           authorization: token,
         },
       }).then((res) => {
-      if (!res.data.error) {
-        setDoctorsList(res.data.data);
+      const { data, error } = res.data;
+      if (!error) {
+        setDoctorsList(data);
       } else {
         logout();
       }
@@ -90,6 +91,60 @@ const Main = (props) => {
       });
     });
   };
+
+  const filterListItem = [
+    [
+      {
+        value: 'empty',
+        text: 'Не выбрано',
+      },
+      {
+        value: 'name',
+        text: 'По имени',
+      },
+      {
+        value: 'doctor',
+        text: 'По врачу',
+      },
+      {
+        value: 'date',
+        text: 'По дате',
+      },
+    ],
+    [
+      {
+        value: 'incr',
+        text: 'По возрастанию',
+      },
+      {
+        value: 'decr',
+        text: 'По убыванию',
+      },
+    ],
+  ];
+
+  const tableHeaderRender = [
+    {
+      className: 'main-content-table__name',
+      text: 'Имя',
+    },
+    {
+      className: 'main-content-table__doctor',
+      text: 'Врач',
+    },
+    {
+      className: 'main-content-table__date',
+      text: 'Дата',
+    },
+    {
+      className: 'main-content-table__complaints',
+      text: 'Жалобы',
+    },
+    {
+      className: 'main-content-table__plug',
+      text: '',
+    },
+  ];
 
   return (
     <div>
@@ -173,10 +228,15 @@ const Main = (props) => {
                     value={checkMainFilter === 'empty' ? '' : checkMainFilter}
                     onChange={(e) => setCheckMainFilter(e.target.value)}
                   >
-                    <MenuItem value="empty">Не выбрано</MenuItem>
-                    <MenuItem value="name">По имени</MenuItem>
-                    <MenuItem value="doctor">По врачу</MenuItem>
-                    <MenuItem value="date">По дате</MenuItem>
+                    {
+                      filterListItem[0].map((value) => (
+                        <MenuItem
+                          value={value.value}
+                        >
+                          {value.text}
+                        </MenuItem>
+                      ))
+                    }
                   </Select>
                 </div>
                 {
@@ -198,8 +258,15 @@ const Main = (props) => {
                           <Select
                             className="main-content-sort-input-fields"
                           >
-                            <MenuItem value="incr">По возрастанию</MenuItem>
-                            <MenuItem value="decr">По убыванию</MenuItem>
+                            {
+                              filterListItem[1].map((value) => (
+                                <MenuItem
+                                  value={value.value}
+                                >
+                                  {value.text}
+                                </MenuItem>
+                              ))
+                            }
                           </Select>
                         </div>
                       )
@@ -208,7 +275,7 @@ const Main = (props) => {
               </div>
               {
                 checkMainFilter === 'date' && checkDateAreaFilter
-                  ? (
+                  && (
                     <div className="main-top-inputs active">
                       <div className="main-top-inputs__label">
                         <p>C:</p>
@@ -230,24 +297,17 @@ const Main = (props) => {
                       </div>
                     </div>
                   )
-                  : <></>
               }
             </div>
             <div className="main-content-table">
               <div className="main-content-table-header">
-                <div className="main-content-table__name main-content-table__column">
-                  <span>Имя</span>
-                </div>
-                <div className="main-content-table__doctor main-content-table__column">
-                  <span>Врач</span>
-                </div>
-                <div className="main-content-table__date main-content-table__column">
-                  <span>Дата</span>
-                </div>
-                <div className="main-content-table__complaints main-content-table__column">
-                  <span>Жалобы</span>
-                </div>
-                <div className="main-content-table__plug main-content-table__column" />
+                {
+                  tableHeaderRender.map((value) => (
+                    <div className={`main-content-table__column ${value.className}`}>
+                      <span>{value.text}</span>
+                    </div>
+                  ))
+                }
               </div>
               <div className="main-content-table-body">
                 {
@@ -266,12 +326,6 @@ const Main = (props) => {
                         <span>{value.complaints}</span>
                       </div>
                       <div className="main-content-table__plug table-body in-row main-content-table__column">
-                        {/*<Button onClick={() => handleOpenModal()}>*/}
-                        {/*  <img src="../images/icon-delete.svg" alt="img"/>*/}
-                        {/*</Button>*/}
-                        {/*<Button>*/}
-                        {/*  <img src="../images/icon-edit.svg" alt="img"/>*/}
-                        {/*</Button>*/}
                         <ModalWindow
                           doctorsList={doctorsList}
                           appointmentList={appointmentList}
@@ -279,6 +333,7 @@ const Main = (props) => {
                           valueInputAdd={valueInputAdd}
                           index={index}
                           typeModal="edit"
+                          token={token}
                           logout={logout}
                         />
                         <ModalWindow

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Backdrop,
   Box,
@@ -9,8 +9,9 @@ import {
   TextField,
 } from '@mui/material';
 import axios from 'axios';
+import EditAppointment from './EditAppointment';
+import DeleteAppointment from './DeleteAppointment';
 import './ModalWindows.scss';
-import { AuthContext } from '../AuthContext';
 
 const ModalWindow = (props) => {
   const {
@@ -20,9 +21,9 @@ const ModalWindow = (props) => {
     valueInputAdd,
     index,
     typeModal,
+    token,
     logout,
   } = props;
-  const { token } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -67,8 +68,9 @@ const ModalWindow = (props) => {
         authorization: token,
       },
     }).then((res) => {
-      if (!res.data.error) {
-        setAppointmentList(res.data.data);
+      const { error, data } = res.data;
+      if (!error) {
+        setAppointmentList(data);
       } else {
         logout();
       }
