@@ -10,6 +10,9 @@ import {
   Select,
   TextField,
 } from '@mui/material';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import DesktopDatePicker from '@material-ui/lab/DesktopDatePicker';
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 
 const EditAppointment = (props) => {
   const {
@@ -20,6 +23,7 @@ const EditAppointment = (props) => {
     inputValueEdit,
     setInputValueEdit,
     editAppointment,
+    changeDataInputAdd,
   } = props;
   const {
     name,
@@ -79,14 +83,22 @@ const EditAppointment = (props) => {
                   </div>
                   <div className="modal-edit-form__input-elem">
                     <p>Дата:</p>
-                    <TextField
-                      type="date"
-                      value={date}
-                      onChange={(e) => setInputValueEdit({
-                        ...inputValueEdit,
-                        date: e.target.value,
-                      })}
-                    />
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DesktopDatePicker
+                        inputFormat="dd/MM/yyyy"
+                        dateFormat="dd/MM/yyyy"
+                        value={date}
+                        onChange={(e) => changeDataInputAdd(e)}
+                        renderInput={
+                          (params) => (
+                            <TextField
+                              className="main-top-inputs-fields modal-edit-header-fields doctor-list"
+                              {...params}
+                            />
+                          )
+                        }
+                      />
+                    </LocalizationProvider>
                   </div>
                   <div className="modal-edit-form__input-elem">
                     <p>Жалобы:</p>
@@ -100,11 +112,14 @@ const EditAppointment = (props) => {
                   </div>
                 </div>
               </FormControl>
-              <div className="modal-edit-btns">
+              <div className="modal-edit-btns header-btn">
                 <Button onClick={() => handleCloseModal()}>
                   Cancel
                 </Button>
-                <Button onClick={() => editAppointment()}>
+                <Button
+                  className="modal-edit-btns__right"
+                  onClick={() => editAppointment()}
+                >
                   Save
                 </Button>
               </div>

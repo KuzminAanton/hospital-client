@@ -6,7 +6,6 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Logo from '../../elements/Logo';
-
 import './Auth.scss';
 
 const Login = (props) => {
