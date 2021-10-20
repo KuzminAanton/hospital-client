@@ -1,17 +1,10 @@
 import React, {
-  useEffect,
+  useContext,
   useState,
 } from 'react';
-import {
-  Backdrop,
-  Box,
-  Button,
-  Fade, FormControl, MenuItem,
-  Modal,
-  Select,
-  TextField,
-} from '@mui/material';
 import axios from 'axios';
+import { AuthContext } from '../AuthContext';
+import moment from 'moment';
 import EditAppointment from './EditAppointment';
 import DeleteAppointment from './DeleteAppointment';
 import './ModalWindows.scss';
@@ -21,12 +14,11 @@ const ModalWindow = (props) => {
     doctorsList,
     appointmentList,
     setAppointmentList,
-    valueInputAdd,
+    setAppointmentListTemp,
     index,
     typeModal,
-    token,
-    logout,
   } = props;
+  const { token, logout } = useContext(AuthContext);
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
@@ -39,66 +31,73 @@ const ModalWindow = (props) => {
   } = appointmentList[index];
 
   const [inputValueEdit, setInputValueEdit] = useState({
-    name: '',
-    doctor: '',
-    date: '',
-    complaints: '',
+    name: patientNameList,
+    doctor: doctorNameList,
+    date: dateList,
+    complaints: complaintsList,
   });
-
-  useEffect(() => {
-    setInputValueEdit({
-      ...valueInputAdd,
-      name: patientNameList,
-      doctor: doctorNameList,
-      date: dateList,
-      complaints: complaintsList,
-    });
-  }, []);
 
   const editAppointment = async () => {
     const {
       name, doctor, date, complaints,
     } = inputValueEdit;
-    await axios.patch(`http://localhost:5000/editAppointments?_id=${_idList}`, {
-      patientName: name,
-      doctorName: doctor,
-      date,
-      complaints,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: token,
+    await axios
+      .patch(`http://localhost:5000/editAppointments?_id=${_idList}`, {
+        patientName: name,
+        doctorName: doctor,
+        date,
+        complaints,
       },
-    }).then((res) => {
-      const { error, data } = res.data;
-      if (!error) {
-        setAppointmentList(data);
-      } else {
-        logout();
-      }
-    });
-    handleCloseModal();
-  };
-
-  const deleteAppointment = async () => {
-    await axios.delete(`http://localhost:5000/deleteAppointments?_id=${_idList}`,
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
-      }).then((res) => {
-      if (!res.data.error) {
-        const { error, data } = res.data;
-        if (!error) {
-          setAppointmentList(data);
-        } else {
+      })
+      .then((res) => {
+        const { data } = res.data;
+        setAppointmentList(data);
+        setAppointmentListTemp(data);
+      })
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 401) {
           logout();
         }
-      }
-    });
+      });
     handleCloseModal();
+  };
+
+  const deleteAppointment = async () => {
+    await axios
+      .delete(`http://localhost:5000/deleteAppointments?_id=${_idList}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        })
+      .then((res) => {
+        const { data } = res.data;
+        setAppointmentList(data);
+        setAppointmentListTemp(data);
+      })
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 401) {
+          logout();
+        }
+      });
+    handleCloseModal();
+  };
+
+  const changeDataInputAdd = (e) => {
+    let temp = moment(e);
+    temp = temp.format('MM-DD-YYYY');
+    setInputValueEdit({
+      ...inputValueEdit,
+      date: temp,
+    });
   };
 
   return (
@@ -114,6 +113,7 @@ const ModalWindow = (props) => {
               inputValueEdit={inputValueEdit}
               setInputValueEdit={setInputValueEdit}
               editAppointment={editAppointment}
+              changeDataInputAdd={changeDataInputAdd}
             />
           )
           : (
