@@ -129,7 +129,8 @@ const Main = (props) => {
   };
 
   const startFilterDate = async () => {
-    if (!dateFilter.dateStart && !dateFilter.dateEnd) {
+    const { dateStart, dateEnd } = dateFilter;
+    if (!dateStart && !dateEnd) {
       setAppointmentList(appointmentListTemp);
     } else {
       setAppointmentList(_.filter(appointmentListTemp,
