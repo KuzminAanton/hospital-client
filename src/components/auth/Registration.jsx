@@ -41,6 +41,7 @@ const Registration = (props) => {
 
   return (
     <div>
+      <Header headerText="Зарегистрироваться в системе" />
       <div className="auth__main">
         <Logo />
         <Box component="form" className="auth-form">
