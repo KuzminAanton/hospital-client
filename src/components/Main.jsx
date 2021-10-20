@@ -128,6 +128,19 @@ const Main = (props) => {
       });
   };
 
+  const startFilterDate = async () => {
+    if (!dateFilter.dateStart && !dateFilter.dateEnd) {
+      setAppointmentList(appointmentListTemp);
+    } else {
+      setAppointmentList(_.filter(appointmentListTemp,
+        (item) => item.date >= dateFilter.dateStart && item.date <= (dateFilter.dateEnd || '3000-12-12')));
+      setCheckMainFilter({
+        ...checkMainFilter,
+        direction: 'empty',
+      });
+    }
+  };
+
   const changeDateFilter = () => {
     setCheckDateAreaFilter(!checkDateAreaFilter);
     setAppointmentList(_.sortBy(appointmentListTemp, 'date'));
@@ -218,6 +231,7 @@ const Main = (props) => {
       dateStart: null,
       dateEnd: null,
     }));
+    setAppointmentList(appointmentListTemp);
   };
 
   const filterListItem = [
@@ -465,7 +479,9 @@ const Main = (props) => {
                     </div>
                     <div className="main-top-inputs-btns">
                       <div className="main-top-inputs-btn">
-                        <Button>
+                        <Button
+                          onClick={() => startFilterDate()}
+                        >
                           Фильтровать
                         </Button>
                       </div>
