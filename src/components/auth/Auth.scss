@@ -107,3 +107,45 @@ span.auth-form-inputs-elem-error-text {
   line-height: 1;
   color: #ff2f2f;
 }
+
+@media (max-width: 900px) {
+  .auth__main {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .main-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    height: 300px;
+    margin-bottom: 20px;
+
+    & > img {
+      max-width: 100%;
+    }
+  }
+
+  .auth-form {
+    margin-bottom: 50px;
+  }
+}
+
+@media (max-width: 500px) {
+  .main-logo {
+    display: none;
+  }
+
+  .auth-form {
+    width: 90%;
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .auth-form__btns {
+    & > button {
+      font-size: 14px;
+    }
+  }
+}

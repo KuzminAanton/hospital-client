@@ -12,10 +12,7 @@ const Registration = (props) => {
   const {
     inputState,
     setInputState,
-    errorAlertLog,
-    errorAlertPass,
-    errorAlertPassReplay,
-    errorText,
+    errorState,
     formSubmit,
     headerParam,
     setHeaderParam,
@@ -25,6 +22,7 @@ const Registration = (props) => {
     passwordValue,
     retryPasswordValue,
   } = inputState;
+
   useEffect(() => {
     setHeaderParam({
       ...headerParam,
@@ -33,10 +31,19 @@ const Registration = (props) => {
     });
   }, []);
 
+  const {
+    errorAlertLog,
+    errorAlertPass,
+    errorAlertPassReplay,
+    errorText,
+  } = errorState;
+
+
   return (
     <div>
+      <Header headerText="Зарегистрироваться в системе" />
       <div className="auth__main">
-        <Logo/>
+        <Logo />
         <Box component="form" className="auth-form">
           <div className="auth-form__title">
             <p>Регистрация</p>

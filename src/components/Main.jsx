@@ -8,32 +8,41 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
+import DesktopDatePicker from '@material-ui/lab/DesktopDatePicker';
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import { AuthContext } from '../AuthContext';
 import ModalWindow from '../elements/ModalWindow';
 import './Main.scss';
 
 const Main = (props) => {
   const { headerParam, setHeaderParam } = props;
-  const { token } = useContext(AuthContext);
-  const { logout } = useContext(AuthContext);
+  const { token, logout } = useContext(AuthContext);
   const [doctorsList, setDoctorsList] = useState([]);
   const [appointmentList, setAppointmentList] = useState([]);
   const [appointmentListTemp, setAppointmentListTemp] = useState([]);
+  const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
   const [checkMainFilter, setCheckMainFilter] = useState({
-    typeFilter: '',
+    typeFilter: 'empty',
     direction: '',
   });
-  const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
   const [valueInputAdd, setValueInputAdd] = useState({
     name: '',
     doctor: '',
-    date: '',
+    date: null,
     complaints: '',
   });
   const [dateFilter, setDateFilter] = useState({
-    dateStart: '',
-    dateEnd: '',
+    dateStart: null,
+    dateEnd: null,
   });
+  const {
+    name,
+    doctor,
+    date,
+    complaints,
+  } = valueInputAdd;
 
   useEffect(() => {
     setHeaderParam({
@@ -43,66 +52,88 @@ const Main = (props) => {
     });
   }, []);
 
-  const getAppointmentList = async () => {
-    await axios.post('http://localhost:5000/getAppointments', {},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: token,
-        },
-      }).then((res) => {
-      if (!res.data.error) {
-        setAppointmentList(res.data.data);
-        setAppointmentListTemp(res.data.data);
-      } else {
-        logout();
-      }
-    });
-  };
-
   useEffect(async () => {
-    getAppointmentList();
+    await axios
+      .get('http://localhost:5000/getAppointments',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        })
+      .then((res) => {
+        const { data } = res.data;
+        setAppointmentList(data);
+        setAppointmentListTemp(data);
+      })
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 401) {
+          logout();
+        }
+      });
   }, [setAppointmentList]);
 
   useEffect(async () => {
-    await axios.post('http://localhost:5000/getDoctors', {},
+    await axios
+      .get('http://localhost:5000/getDoctors',
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        })
+      .then((res) => {
+        const { data } = res.data;
+        setDoctorsList(data);
+      })
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 401) {
+          logout();
+        }
+      });
+  }, [setDoctorsList]);
+
+  const addNewAppointment = async () => {
+    await axios
+      .post('http://localhost:5000/addAppointments', {
+        patientName: name,
+        doctorName: doctor,
+        date,
+        complaints,
+      },
       {
         headers: {
           'Content-Type': 'application/json',
           authorization: token,
         },
-      }).then((res) => {
-      if (!res.data.error) {
-        setDoctorsList(res.data.data);
-      } else {
-        logout();
-      }
-    });
-  }, [setDoctorsList]);
-
-  const addNewAppointment = async () => {
-    const {
-      name, doctor, date, complaints,
-    } = valueInputAdd;
-    await axios.post('http://localhost:5000/addAppointments', {
-      patientName: name,
-      doctorName: doctor,
-      date,
-      complaints,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: token,
-      },
-    }).then((res) => {
-      setAppointmentList(res.data.data);
-      setValueInputAdd({
-        name: '',
-        doctor: '',
-        date: '',
-        complaints: '',
+      })
+      .then((res) => {
+        const { data } = res.data;
+        setValueInputAdd({
+          name: '',
+          doctor: '',
+          date: null,
+          complaints: '',
+        });
+        setAppointmentList(data);
+        setAppointmentListTemp(data);
+      })
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 401) {
+          logout();
+        }
       });
+  };
+
+  const changeDateFilter = () => {
+    setCheckDateAreaFilter(!checkDateAreaFilter);
+    setAppointmentList(_.sortBy(appointmentListTemp, 'date'));
+    setDateFilter({
+      dateStart: null,
+      dateEnd: null,
     });
   };
 
@@ -112,9 +143,13 @@ const Main = (props) => {
       ...checkMainFilter,
       direction: e.target.value,
     });
-    setAppointmentList(_.orderBy(appointmentList,
-      [`${checkMainFilter.typeFilter}`],
-      [`${value}`]));
+    if (value === 'reset') {
+      setAppointmentList(() => appointmentListTemp);
+    } else {
+      setAppointmentList(_.orderBy(appointmentList,
+        [`${checkMainFilter.typeFilter}`],
+        [`${value}`]));
+    }
   };
 
   const typeFilterFunc = (e) => {
@@ -123,7 +158,6 @@ const Main = (props) => {
       ...checkMainFilter,
       typeFilter: value,
     });
-    setAppointmentList(_.orderBy(appointmentList, [`${value}`]));
   };
 
   const filterChange = (e, value) => {
@@ -142,7 +176,8 @@ const Main = (props) => {
   };
 
   const dateFilterFunc = (e, value) => {
-    const valueDate = e.target.value;
+    let valueDate = moment(e);
+    valueDate = valueDate.format('MM-DD-YYYY');
     switch (value) {
       case 'start':
         setDateFilter(() => ({
@@ -163,20 +198,85 @@ const Main = (props) => {
     }
   };
 
-  const dateTextCorrect = (e) => {
-    const t = e.split('-');
-    return `${t[2]}.${t[1]}.${t[0]}`;
+  const dateTextCorrect = (val) => {
+    const t = val.split('-');
+    return `${t[1]}.${t[0]}.${t[2]}`;
   };
 
-  const startFilterDate = async () => {
-    setAppointmentList(_.filter(_.sortBy(appointmentListTemp, 'date'),
-      (item) => item.date >= dateFilter.dateStart && item.date <= dateFilter.dateEnd));
+  const changeDataInputAdd = (e) => {
+    let temp = moment(e);
+    temp = temp.format('MM-DD-YYYY');
+    setValueInputAdd({
+      ...valueInputAdd,
+      date: temp,
+    });
   };
 
-  const deleteDateFilter = () => {
-    setCheckDateAreaFilter(!checkDateAreaFilter);
-    setAppointmentList(_.sortBy(appointmentListTemp, 'date'));
+  const clearDateFilter = () => {
+    setDateFilter(() => ({
+      ...dateFilter,
+      dateStart: null,
+      dateEnd: null,
+    }));
   };
+
+  const filterListItem = [
+    [
+      {
+        value: 'empty',
+        text: 'Не выбрано',
+      },
+      {
+        value: 'patientName',
+        text: 'По имени',
+      },
+      {
+        value: 'doctorName',
+        text: 'По врачу',
+      },
+      {
+        value: 'date',
+        text: 'По дате',
+      },
+    ],
+    [
+      {
+        value: 'reset',
+        text: 'По умолчанию',
+      },
+      {
+        value: 'asc',
+        text: 'По возрастанию',
+      },
+      {
+        value: 'desc',
+        text: 'По убыванию',
+      },
+    ],
+  ];
+
+  const tableHeaderRender = [
+    {
+      className: 'main-content-table__name',
+      text: 'Имя',
+    },
+    {
+      className: 'main-content-table__doctor',
+      text: 'Врач',
+    },
+    {
+      className: 'main-content-table__date',
+      text: 'Дата',
+    },
+    {
+      className: 'main-content-table__complaints',
+      text: 'Жалобы',
+    },
+    {
+      className: 'main-content-table__plug',
+      text: '',
+    },
+  ];
 
   return (
     <div>
@@ -189,7 +289,7 @@ const Main = (props) => {
                 <TextField
                   name="name"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.name}
+                  value={name}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     name: e.target.value,
@@ -201,7 +301,7 @@ const Main = (props) => {
                 <Select
                   name="doctor"
                   className="main-top-inputs-fields doctor-list"
-                  value={valueInputAdd.doctor}
+                  value={doctor}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     doctor: e.target.value,
@@ -214,23 +314,30 @@ const Main = (props) => {
               </div>
               <div className="main-top-inputs__label">
                 <p>Дата:</p>
-                <TextField
-                  name="date"
-                  type="date"
-                  className="main-top-inputs-fields"
-                  value={valueInputAdd.date}
-                  onChange={(e) => setValueInputAdd({
-                    ...valueInputAdd,
-                    date: e.target.value,
-                  })}
-                />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DesktopDatePicker
+                    inputFormat="dd/MM/yyyy"
+                    dateFormat="dd/MM/yyyy"
+                    toolbarPlaceholder=""
+                    value={valueInputAdd.date}
+                    onChange={(e) => changeDataInputAdd(e)}
+                    renderInput={
+                      (params) => (
+                        <TextField
+                          className="main-top-inputs-fields main-top-inputs-fields__modal"
+                          {...params}
+                        />
+                      )
+                    }
+                  />
+                </LocalizationProvider>
               </div>
               <div className="main-top-inputs__label">
                 <p>Жалобы:</p>
                 <TextField
                   name="complaints"
                   className="main-top-inputs-fields"
-                  value={valueInputAdd.complaints}
+                  value={complaints}
                   onChange={(e) => setValueInputAdd({
                     ...valueInputAdd,
                     complaints: e.target.value,
@@ -259,71 +366,112 @@ const Main = (props) => {
                     value={checkMainFilter.typeFilter === 'empty' ? '' : checkMainFilter.typeFilter}
                     onChange={(e) => filterChange(e, 'typeFilter')}
                   >
-                    <MenuItem value="empty">Не выбрано</MenuItem>
-                    <MenuItem value="patientName">По имени</MenuItem>
-                    <MenuItem value="doctorName">По врачу</MenuItem>
-                    <MenuItem value="date">По дате</MenuItem>
+                    {
+                      filterListItem[0].map((value) => (
+                        <MenuItem
+                          value={value.value}
+                        >
+                          {value.text}
+                        </MenuItem>
+                      ))
+                    }
                   </Select>
                 </div>
                 {
-                  checkMainFilter.typeFilter === 'date' && !checkDateAreaFilter
-                    ? (
-                      <div className="main-content-sort-date-sort">
-                        <span>Добавить фильтр по дате:</span>
-                        <Button onClick={() => setCheckDateAreaFilter(!checkDateAreaFilter)}>
-                          <div className="main-content-sort-date-sort-icon">
-                            <img src="../images/icon-add.svg" alt="" />
-                          </div>
-                        </Button>
-                      </div>
-                    )
-                    : checkMainFilter.typeFilter === 'doctorName' || checkMainFilter.typeFilter === 'patientName'
-                      ? (
-                        <div className="main-content-sort-input">
-                          <span>Направление:</span>
-                          <Select
-                            className="main-content-sort-input-fields"
-                            value={checkMainFilter.direction}
-                            onChange={(e) => filterChange(e, 'direction')}
-                          >
-                            <MenuItem value="asc">По возрастанию</MenuItem>
-                            <MenuItem value="desc">По убыванию</MenuItem>
-                          </Select>
-                        </div>
-                      )
-                      : <></>
+                  checkMainFilter.typeFilter !== 'empty'
+                  && (
+                    <div className="main-content-sort-input">
+                      <span>Направление:</span>
+                      <Select
+                        className="main-content-sort-input-fields"
+                        value={checkMainFilter.direction || 'reset'}
+                        onChange={(e) => filterChange(e, 'direction')}
+                      >
+                        {
+                          filterListItem[1].map((value) => (
+                            <MenuItem
+                              value={value.value}
+                            >
+                              {value.text}
+                            </MenuItem>
+                          ))
+                        }
+                      </Select>
+                    </div>
+                  )
                 }
+                <div className="main-content-sort-date-sort">
+                  <span>
+                    {
+                      !checkDateAreaFilter
+                        ? 'Добавить фильтр по дате:'
+                        : 'Убрать фильтр по дате'
+                    }
+                  </span>
+                  <Button onClick={() => changeDateFilter()}>
+                    <div className="main-content-sort-date-sort-icon">
+                      {
+                        !checkDateAreaFilter
+                          ? <img src="../images/icon-add.svg" alt="" />
+                          : <img src="../images/icon-delete-big.svg" alt="" />
+                      }
+                    </div>
+                  </Button>
+                </div>
               </div>
               {
-                checkMainFilter.typeFilter === 'date' && checkDateAreaFilter
-                  ? (
-                    <div className="main-top-inputs active">
-                      <div className="main-top-inputs__label">
-                        <p>C:</p>
-                        <TextField
-                          type="date"
-                          className="main-top-inputs-fields active"
+                checkDateAreaFilter
+                && (
+                  <div className="main-top-inputs active">
+                    <div className="main-top-inputs__label main-top-inputs__label__margin">
+                      <p>C:</p>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DesktopDatePicker
+                          inputFormat="dd/MM/yyyy"
+                          dateFormat="dd/MM/yyyy"
+                          toolbarPlaceholder=""
+                          value={dateFilter.dateStart}
                           onChange={(e) => dateFilterFunc(e, 'start')}
+                          renderInput={
+                            (params) => (
+                              <TextField
+                                className="main-top-inputs-fields main-top-inputs-fields__modal"
+                                {...params}
+                              />
+                            )
+                          }
                         />
-                      </div>
-                      <div className="main-top-inputs__label">
-                        <p>По:</p>
-                        <TextField
-                          type="date"
-                          className="main-top-inputs-fields"
+                      </LocalizationProvider>
+                    </div>
+                    <div className="main-top-inputs__label">
+                      <p>По:</p>
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <DesktopDatePicker
+                          inputFormat="dd/MM/yyyy"
+                          dateFormat="dd/MM/yyyy"
+                          toolbarPlaceholder=""
+                          value={dateFilter.dateEnd}
                           onChange={(e) => dateFilterFunc(e, 'end')}
+                          renderInput={
+                            (params) => (
+                              <TextField
+                                className="main-top-inputs-fields main-top-inputs-fields__modal"
+                                {...params}
+                              />
+                            )
+                          }
                         />
-                      </div>
+                      </LocalizationProvider>
+                    </div>
+                    <div className="main-top-inputs-btns">
                       <div className="main-top-inputs-btn">
-                        <Button
-                          onClick={() => startFilterDate()}
-                        >
+                        <Button>
                           Фильтровать
                         </Button>
                       </div>
                       <div className="main-top-inputs-btn-deactivate">
                         <Button
-                          onClick={() => deleteDateFilter()}
+                          onClick={() => clearDateFilter()}
                         >
                           <div className="main-top-inputs-btn-deactivate">
                             <img src="../images/icon-delete-big.svg" alt="" />
@@ -331,25 +479,19 @@ const Main = (props) => {
                         </Button>
                       </div>
                     </div>
-                  )
-                  : <></>
+                  </div>
+                )
               }
             </div>
             <div className="main-content-table">
               <div className="main-content-table-header">
-                <div className="main-content-table__name main-content-table__column">
-                  <span>Имя</span>
-                </div>
-                <div className="main-content-table__doctor main-content-table__column">
-                  <span>Врач</span>
-                </div>
-                <div className="main-content-table__date main-content-table__column">
-                  <span>Дата</span>
-                </div>
-                <div className="main-content-table__complaints main-content-table__column">
-                  <span>Жалобы</span>
-                </div>
-                <div className="main-content-table__plug main-content-table__column" />
+                {
+                  tableHeaderRender.map((value) => (
+                    <div className={`main-content-table__column ${value.className}`}>
+                      <span>{value.text}</span>
+                    </div>
+                  ))
+                }
               </div>
               <div className="main-content-table-body">
                 {
@@ -372,14 +514,17 @@ const Main = (props) => {
                           doctorsList={doctorsList}
                           appointmentList={appointmentList}
                           setAppointmentList={setAppointmentList}
+                          setAppointmentListTemp={setAppointmentListTemp}
                           valueInputAdd={valueInputAdd}
                           index={index}
                           typeModal="edit"
+                          token={token}
                           logout={logout}
                         />
                         <ModalWindow
                           appointmentList={appointmentList}
                           setAppointmentList={setAppointmentList}
+                          setAppointmentListTemp={setAppointmentListTemp}
                           index={index}
                           typeModal="deleted"
                         />
