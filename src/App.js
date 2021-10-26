@@ -1,10 +1,10 @@
-import './App.scss';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { useAuth } from './hooks/auth.hooks';
 import { AuthContext } from './AuthContext';
 import MainRoute from './routes/MainRoute';
 import Header from './elements/Header';
+import './App.scss';
 
 const App = () => {
   const {
