@@ -6,6 +6,7 @@ import {
   Switch,
 } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 import Login from '../components/auth/Login';
 import Registration from '../components/auth/Registration';
 import { AuthContext } from '../AuthContext';
@@ -14,12 +15,11 @@ import '../components/auth/Auth.scss';
 const Auth = (props) => {
   const { headerParam, setHeaderParam } = props;
   const { login } = useContext(AuthContext);
-  const [inputState, setInputState] = useState({
-    loginValue: '',
-    passwordValue: '',
-    retryPasswordValue: '',
-  });
-  const { loginValue, passwordValue, retryPasswordValue } = inputState;
+  const {
+    loginValue,
+    passwordValue,
+    retryPasswordValue,
+  } = useSelector((state) => state.authorizationSlice.inputState);
   const [errorState, setErrorState] = useState({
     errorAlertLog: false,
     errorAlertPass: false,
@@ -154,8 +154,6 @@ const Auth = (props) => {
       <Switch>
         <Route path="/auth/login">
           <Login
-            inputState={inputState}
-            setInputState={setInputState}
             errorState={errorState}
             formSubmit={formSubmit}
             headerParam={headerParam}
@@ -164,8 +162,6 @@ const Auth = (props) => {
         </Route>
         <Route path="/auth/reg">
           <Registration
-            inputState={inputState}
-            setInputState={setInputState}
             errorState={errorState}
             formSubmit={formSubmit}
             headerParam={headerParam}

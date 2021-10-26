@@ -1,5 +1,5 @@
 import './App.scss';
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { useAuth } from './hooks/auth.hooks';
 import { AuthContext } from './AuthContext';
@@ -7,10 +7,6 @@ import MainRoute from './routes/MainRoute';
 import Header from './elements/Header';
 
 const App = () => {
-  const [headerParam, setHeaderParam] = useState({
-    text: '',
-    checkBtn: false,
-  });
   const {
     login, logout, token, userId,
   } = useAuth();
@@ -26,9 +22,9 @@ const App = () => {
     }}
     >
       <div className="App">
-        <Header headerParam={headerParam} />
+        <Header />
         <BrowserRouter>
-          <MainRoute isLogin={isLogin} headerParam={headerParam} setHeaderParam={setHeaderParam} />
+          <MainRoute isLogin={isLogin} />
         </BrowserRouter>
       </div>
     </AuthContext.Provider>

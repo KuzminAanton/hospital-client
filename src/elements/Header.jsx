@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import { Button } from '@mui/material';
 import { AuthContext } from '../AuthContext';
 import './Header.scss';
 
-const Header = (props) => {
-  const { headerParam } = props;
+const Header = () => {
+  const selectorHeaderSlice = (state) => state.headerSlice.headerState;
+  const { text, checkBtn } = useSelector(selectorHeaderSlice);
   const { logout } = useContext(AuthContext);
 
   return (
@@ -12,14 +14,14 @@ const Header = (props) => {
       <div className="header">
         <div className="header-title">
           <div className="header-title__logo">
-            <img src="../images/icon-logo.svg" alt="logo" />
+            <img src="../images/icon-logo.svg" alt="logo"/>
           </div>
           <div className="header-title__text">
-            <p>{headerParam.text}</p>
+            <p>{text}</p>
           </div>
         </div>
         {
-          headerParam.checkBtn
+          checkBtn
           && (
             <div className="header-btn">
               <Button onClick={() => logout()}>Выход</Button>

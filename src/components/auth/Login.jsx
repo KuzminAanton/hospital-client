@@ -5,22 +5,28 @@ import {
   TextField,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Logo from '../../elements/Logo';
+import { changeInputState } from '../../redux/slice/authorizationSlice';
+import { changeHeaderState } from '../../redux/slice/headerSlice';
 import './Auth.scss';
 
 const Login = (props) => {
+  const dispatch = useDispatch();
+  const selectorAuthorizationSlice = (state) => state.authorizationSlice.inputState;
+  const { loginValue, passwordValue } = useSelector(selectorAuthorizationSlice);
+
+  const changeValueInputFunc = (e, flag) => {
+    dispatch(changeInputState({
+      text: e.target.value,
+      flagInput: flag,
+    }));
+  };
+
   const {
-    inputState,
-    setInputState,
-    errorState,
     formSubmit,
-    headerParam,
-    setHeaderParam,
+    errorState,
   } = props;
-  const {
-    loginValue,
-    passwordValue,
-  } = inputState;
   const {
     errorAlertLog,
     errorAlertPass,
@@ -28,11 +34,10 @@ const Login = (props) => {
   } = errorState;
 
   useEffect(() => {
-    setHeaderParam({
-      ...headerParam,
+    dispatch(changeHeaderState({
       text: 'Авторизация',
       checkBtn: false,
-    });
+    }));
   }, []);
 
   return (
@@ -61,10 +66,7 @@ const Login = (props) => {
                 type="text"
                 placeholder="Login"
                 value={loginValue}
-                onChange={(e) => setInputState({
-                  ...inputState,
-                  loginValue: e.target.value,
-                })}
+                onChange={(e) => changeValueInputFunc(e, 'LOGIN')}
               />
             </div>
             <div className="auth-form-inputs-elem">
@@ -75,10 +77,7 @@ const Login = (props) => {
                 type="password"
                 placeholder="Password"
                 value={passwordValue}
-                onChange={(e) => setInputState({
-                  ...inputState,
-                  passwordValue: e.target.value,
-                })}
+                onChange={(e) => changeValueInputFunc(e, 'PASSWORD')}
               />
             </div>
           </div>

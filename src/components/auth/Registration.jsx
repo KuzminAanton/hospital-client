@@ -4,33 +4,25 @@ import {
   Button,
   TextField,
 } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Logo from '../../elements/Logo';
+import { changeInputState } from '../../redux/slice/authorizationSlice';
+import { changeHeaderState } from '../../redux/slice/headerSlice';
 import './Auth.scss';
 
 const Registration = (props) => {
-  const {
-    inputState,
-    setInputState,
-    errorState,
-    formSubmit,
-    headerParam,
-    setHeaderParam,
-  } = props;
+  const dispatch = useDispatch();
+  const selectorAuthorizationSlice = (state) => state.authorizationSlice.inputState;
   const {
     loginValue,
     passwordValue,
     retryPasswordValue,
-  } = inputState;
-
-  useEffect(() => {
-    setHeaderParam({
-      ...headerParam,
-      text: 'Зарегистрироваться в системе',
-      checkBtn: false,
-    });
-  }, []);
-
+  } = useSelector(selectorAuthorizationSlice);
+  const {
+    errorState,
+    formSubmit,
+  } = props;
   const {
     errorAlertLog,
     errorAlertPass,
@@ -38,17 +30,28 @@ const Registration = (props) => {
     errorText,
   } = errorState;
 
+  useEffect(() => {
+    dispatch(changeHeaderState({
+      text: 'Зарегистрироваться в системе',
+      checkBtn: false,
+    }));
+  }, []);
+
+  const changeValueInputFunc = (e, flag) => {
+    dispatch(changeInputState({
+      text: e.target.value,
+      flagInput: flag,
+    }));
+  };
 
   return (
     <div>
-      <Header headerText="Зарегистрироваться в системе" />
       <div className="auth__main">
         <Logo />
         <Box component="form" className="auth-form">
           <div className="auth-form__title">
             <p>Регистрация</p>
           </div>
-
           <div
             className={
               `auth-inputs-field-error__all ${errorText
@@ -58,7 +61,6 @@ const Registration = (props) => {
           >
             <p>{errorText}</p>
           </div>
-
           <div className="auth-form-inputs">
             <div className="auth-form-inputs-elem">
               <p>Login:</p>
@@ -68,10 +70,7 @@ const Registration = (props) => {
                 type="text"
                 placeholder="Login"
                 value={loginValue}
-                onChange={(e) => setInputState({
-                  ...inputState,
-                  loginValue: e.target.value,
-                })}
+                onChange={(e) => changeValueInputFunc(e, 'LOGIN')}
               />
             </div>
             <div className="auth-form-inputs-elem">
@@ -82,10 +81,7 @@ const Registration = (props) => {
                 type="password"
                 placeholder="Password"
                 value={passwordValue}
-                onChange={(e) => setInputState({
-                  ...inputState,
-                  passwordValue: e.target.value,
-                })}
+                onChange={(e) => changeValueInputFunc(e, 'PASSWORD')}
               />
             </div>
             <div className="auth-form-inputs-elem">
@@ -96,10 +92,7 @@ const Registration = (props) => {
                 type="password"
                 placeholder="Password"
                 value={retryPasswordValue}
-                onChange={(e) => setInputState({
-                  ...inputState,
-                  retryPasswordValue: e.target.value,
-                })}
+                onChange={(e) => changeValueInputFunc(e, 'RETRY_PASSWORD')}
               />
             </div>
           </div>
