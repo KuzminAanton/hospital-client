@@ -12,16 +12,26 @@ import moment from 'moment';
 import DesktopDatePicker from '@material-ui/lab/DesktopDatePicker';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import { useDispatch, useSelector } from 'react-redux';
 import { AuthContext } from '../AuthContext';
 import ModalWindow from '../elements/ModalWindow';
 import './Main.scss';
+import { changeHeaderState } from '../redux/slice/headerSlice';
+import {
+  changeAppointmentState,
+  changeAppointmentTempState,
+  changeDoctorList,
+} from '../redux/slice/appointmentSlice';
 
-const Main = (props) => {
-  const { headerParam, setHeaderParam } = props;
+const Main = () => {
+  const dispatch = useDispatch();
+  const selectorAuthorizationSlice = (state) => state.appointmentSlice;
+  const {
+    appointmentList,
+    appointmentListTemp,
+    doctorsList,
+  } = useSelector(selectorAuthorizationSlice);
   const { token, logout } = useContext(AuthContext);
-  const [doctorsList, setDoctorsList] = useState([]);
-  const [appointmentList, setAppointmentList] = useState([]);
-  const [appointmentListTemp, setAppointmentListTemp] = useState([]);
   const [checkDateAreaFilter, setCheckDateAreaFilter] = useState(false);
   const [checkMainFilter, setCheckMainFilter] = useState({
     typeFilter: 'empty',
@@ -45,11 +55,10 @@ const Main = (props) => {
   } = valueInputAdd;
 
   useEffect(() => {
-    setHeaderParam({
-      ...headerParam,
+    dispatch(changeHeaderState({
       text: 'Приемы',
       checkBtn: true,
-    });
+    }));
   }, []);
 
   useEffect(async () => {
@@ -63,8 +72,8 @@ const Main = (props) => {
         })
       .then((res) => {
         const { data } = res.data;
-        setAppointmentList(data);
-        setAppointmentListTemp(data);
+        dispatch(changeAppointmentState(data));
+        dispatch(changeAppointmentTempState(data));
       })
       .catch((err) => {
         const { status } = err.response;
@@ -72,7 +81,7 @@ const Main = (props) => {
           logout();
         }
       });
-  }, [setAppointmentList]);
+  }, []);
 
   useEffect(async () => {
     await axios
@@ -85,7 +94,7 @@ const Main = (props) => {
         })
       .then((res) => {
         const { data } = res.data;
-        setDoctorsList(data);
+        dispatch(changeDoctorList(data));
       })
       .catch((err) => {
         const { status } = err.response;
@@ -93,7 +102,7 @@ const Main = (props) => {
           logout();
         }
       });
-  }, [setDoctorsList]);
+  }, []);
 
   const addNewAppointment = async () => {
     await axios
@@ -117,8 +126,8 @@ const Main = (props) => {
           date: null,
           complaints: '',
         });
-        setAppointmentList(data);
-        setAppointmentListTemp(data);
+        dispatch(changeAppointmentState(data));
+        dispatch(changeAppointmentTempState(data));
       })
       .catch((err) => {
         const { status } = err.response;
@@ -131,10 +140,12 @@ const Main = (props) => {
   const startFilterDate = async () => {
     const { dateStart, dateEnd } = dateFilter;
     if (!dateStart && !dateEnd) {
-      setAppointmentList(appointmentListTemp);
+      dispatch(changeAppointmentState(appointmentListTemp));
     } else {
-      setAppointmentList(_.filter(appointmentListTemp,
-        (item) => item.date >= dateFilter.dateStart && item.date <= (dateFilter.dateEnd || '3000-12-12')));
+      dispatch(changeAppointmentState(_.filter(appointmentListTemp, (item) => item.date
+          >= dateFilter.dateStart
+          && item.date
+          <= (dateFilter.dateEnd || '3000-12-12'))));
       setCheckMainFilter({
         ...checkMainFilter,
         direction: 'empty',
@@ -144,7 +155,7 @@ const Main = (props) => {
 
   const changeDateFilter = () => {
     setCheckDateAreaFilter(!checkDateAreaFilter);
-    setAppointmentList(_.sortBy(appointmentListTemp, 'date'));
+    dispatch(changeAppointmentState(_.sortBy(appointmentListTemp, 'date')));
     setDateFilter({
       dateStart: null,
       dateEnd: null,
@@ -158,11 +169,11 @@ const Main = (props) => {
       direction: e.target.value,
     });
     if (value === 'reset') {
-      setAppointmentList(() => appointmentListTemp);
+      dispatch(changeAppointmentState(appointmentListTemp));
     } else {
-      setAppointmentList(_.orderBy(appointmentList,
+      dispatch(changeAppointmentState(_.orderBy(appointmentList,
         [`${checkMainFilter.typeFilter}`],
-        [`${value}`]));
+        [`${value}`])));
     }
   };
 
@@ -232,7 +243,7 @@ const Main = (props) => {
       dateStart: null,
       dateEnd: null,
     }));
-    setAppointmentList(appointmentListTemp);
+    dispatch(changeAppointmentState(appointmentListTemp));
   };
 
   const filterListItem = [
@@ -530,8 +541,6 @@ const Main = (props) => {
                         <ModalWindow
                           doctorsList={doctorsList}
                           appointmentList={appointmentList}
-                          setAppointmentList={setAppointmentList}
-                          setAppointmentListTemp={setAppointmentListTemp}
                           valueInputAdd={valueInputAdd}
                           index={index}
                           typeModal="edit"
@@ -540,8 +549,6 @@ const Main = (props) => {
                         />
                         <ModalWindow
                           appointmentList={appointmentList}
-                          setAppointmentList={setAppointmentList}
-                          setAppointmentListTemp={setAppointmentListTemp}
                           index={index}
                           typeModal="deleted"
                         />
