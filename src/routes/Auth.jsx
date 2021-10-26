@@ -12,14 +12,14 @@ import Registration from '../components/auth/Registration';
 import { AuthContext } from '../AuthContext';
 import '../components/auth/Auth.scss';
 
-const Auth = (props) => {
-  const { headerParam, setHeaderParam } = props;
+const Auth = () => {
   const { login } = useContext(AuthContext);
+  const selectorAuthorizationSlice = (state) => state.authorizationSlice.inputState;
   const {
     loginValue,
     passwordValue,
     retryPasswordValue,
-  } = useSelector((state) => state.authorizationSlice.inputState);
+  } = useSelector(selectorAuthorizationSlice);
   const [errorState, setErrorState] = useState({
     errorAlertLog: false,
     errorAlertPass: false,
@@ -156,16 +156,12 @@ const Auth = (props) => {
           <Login
             errorState={errorState}
             formSubmit={formSubmit}
-            headerParam={headerParam}
-            setHeaderParam={setHeaderParam}
           />
         </Route>
         <Route path="/auth/reg">
           <Registration
             errorState={errorState}
             formSubmit={formSubmit}
-            headerParam={headerParam}
-            setHeaderParam={setHeaderParam}
           />
         </Route>
       </Switch>

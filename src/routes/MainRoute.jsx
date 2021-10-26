@@ -4,12 +4,12 @@ import Auth from './Auth';
 import Main from '../components/Main';
 
 const MainRoute = (props) => {
-  const { isLogin, headerParam, setHeaderParam } = props;
+  const { isLogin } = props;
   if (isLogin) {
     return (
       <Switch>
         <Route path="/main" exact>
-          <Main headerParam={headerParam} setHeaderParam={setHeaderParam} />
+          <Main />
         </Route>
         <Redirect to="/main" />
       </Switch>
@@ -19,7 +19,7 @@ const MainRoute = (props) => {
   return (
     <Switch>
       <Route path="/auth" exact>
-        <Auth headerParam={headerParam} setHeaderParam={setHeaderParam} />
+        <Auth />
       </Route>
       <Redirect to="/auth" />
     </Switch>

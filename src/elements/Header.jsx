@@ -14,7 +14,7 @@ const Header = () => {
       <div className="header">
         <div className="header-title">
           <div className="header-title__logo">
-            <img src="../images/icon-logo.svg" alt="logo"/>
+            <img src="../images/icon-logo.svg" alt="logo" />
           </div>
           <div className="header-title__text">
             <p>{text}</p>
